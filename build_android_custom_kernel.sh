@@ -30,7 +30,7 @@ fi
 
 cd $KERNEL_ROOT
 if [ ! -f ./.config ]; then
-    make yuskey_hammerhead_defconfig
+    make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
 fi
 make menuconfig ARCH=arm SUBARCH=arm
 if [ -n "$CROSS_COMPILE" ]; then
