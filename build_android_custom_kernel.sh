@@ -1,23 +1,24 @@
 #!/bin/sh
 
-ANDROID_KITCHEN=`which $0 | xargs dirname 2> /dev/null || echo $0 | xargs dirname 2> /dev/null`
+android_kitchen_relative_path=`which $0 | xargs dirname 2> /dev/null || echo $0 | xargs dirname 2> /dev/null`
+ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
 KERNEL_ROOT="$ANDROID_KITCHEN/Yuskey1989/Nexus_5"
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
-TOOLCHAIN=$1
-for toolchain_path in `echo $ANDROID_KITCHEN/toolchains/*/bin $ANDROID_KITCHEN/toolchains/*/*/*/bin`
+TOOLCHAIN_ROOT=$ANDROID_KITCHEN/toolchains
+for toolchain_path in `echo $TOOLCHAIN_ROOT/*/bin $TOOLCHAIN_ROOT/*/*/*/bin`
 do
     PATH=$PATH:$toolchain_path
 done
 
-case $TOOLCHAIN in
+case $1 in
     a15)
-	export CROSS_COMPILE=arm-cortex_a15-linux-gnueabihf-;;
+	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
     linaro)
-	export CROSS_COMPILE=arm-linux-gnueabihf-;;
+	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep gcc-linaro-arm-linux-gnueabihf- | tail -n 1`/bin/arm-linux-gnueabihf-;;
     sabermod)
-	export CROSS_COMPILE=arm-linux-androideabi-;;
+	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep sabermod | tail -n 1`/bin/arm-linux-androideabi-;;
     google)
-	export CROSS_COMPILE=arm-linux-androideabi-;;
+	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep arm-linux-androideabi- | grep -v clang | tail -n 1`/prebuilt/linux-`uname -m`/bin/arm-linux-androideabi-;;
     ubuntu)
 	export CROSS_COMPILE=;;
     *)
@@ -41,7 +42,6 @@ if [ -n "$CROSS_COMPILE" ]; then
 else
     exit 1
 fi
-cd -
 
 cp -f $KERNEL_ROOT/arch/arm/boot/zImage $MKBOOT/work
 
