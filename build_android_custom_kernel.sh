@@ -4,7 +4,7 @@ ANDROID_KITCHEN=`which $0 | xargs dirname 2> /dev/null || echo $0 | xargs dirnam
 KERNEL_ROOT="$ANDROID_KITCHEN/Yuskey1989/Nexus_5"
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
 TOOLCHAIN=$1
-for toolchain_path in `echo $ANDROID_KITCHEN/linaro-toolchain/*/bin`
+for toolchain_path in `echo $ANDROID_KITCHEN/toolchains/*/bin $ANDROID_KITCHEN/toolchains/*/*/*/bin`
 do
     PATH=$PATH:$toolchain_path
 done
