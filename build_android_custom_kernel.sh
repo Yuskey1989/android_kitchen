@@ -14,6 +14,8 @@ case $TOOLCHAIN in
 	export CROSS_COMPILE=arm-cortex_a15-linux-gnueabihf-;;
     linaro)
 	export CROSS_COMPILE=arm-linux-gnueabihf-;;
+    sabermod)
+	export CROSS_COMPILE=arm-linux-androideabi-;;
     google)
 	export CROSS_COMPILE=arm-linux-androideabi-;;
     ubuntu)
