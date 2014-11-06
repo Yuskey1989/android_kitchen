@@ -19,10 +19,9 @@ case $1 in
 	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep sabermod | tail -n 1`/bin/arm-linux-androideabi-;;
     google)
 	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep arm-linux-androideabi- | grep -v clang | tail -n 1`/prebuilt/linux-`uname -m`/bin/arm-linux-androideabi-;;
-    ubuntu)
-	export CROSS_COMPILE=;;
     *)
-	export CROSS_COMPILE=arm-cortex_a15-linux-gnueabihf-;;
+	# Default toolchain
+	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
 esac
 echo -n "CROSS_COMPILE="
 echo $CROSS_COMPILE
