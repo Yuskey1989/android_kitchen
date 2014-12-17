@@ -4,7 +4,7 @@ android_kitchen_relative_path=`which $0 | xargs dirname 2> /dev/null || echo $0 
 ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
 KERNEL_ROOT="$ANDROID_KITCHEN/Yuskey1989/Nexus_5"
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
-TOOLCHAIN_ROOT=$ANDROID_KITCHEN/toolchains
+TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 for toolchain_path in `echo $TOOLCHAIN_ROOT/*/bin $TOOLCHAIN_ROOT/*/*/*/bin`
 do
     PATH=$PATH:$toolchain_path
