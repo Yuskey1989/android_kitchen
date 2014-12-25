@@ -5,6 +5,9 @@ ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
 KERNEL_ROOT="$ANDROID_KITCHEN/Yuskey1989/Nexus_5"
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
 TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
+RAMDISK="$ANDROID_KITCHEN/mkbootimg_tools/work/ramdisk"
+WORK="$ANDROID_KITCHEN/mkbootimg_tools/work"
+
 for toolchain_path in `echo $TOOLCHAIN_ROOT/*/bin $TOOLCHAIN_ROOT/*/*/*/bin`
 do
     PATH=$PATH:$toolchain_path
@@ -25,8 +28,10 @@ case $1 in
 esac
 echo -n "CROSS_COMPILE="
 echo $CROSS_COMPILE
+[ -n "$CROSS_COMPILE" ] || exit 1
 
-if [ ! -d $KERNEL_ROOT -a ! -d $MKBOOT ]; then
+if [ ! -d "$KERNEL_ROOT" -a ! -d "$MKBOOT" -a ! -d "$RAMDISK" -a ! -d "$WORK" ]; then
+    echo "Do not exist some directories"
     exit 1
 fi
 
@@ -35,17 +40,18 @@ if [ ! -f ./.config ]; then
     make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
 fi
 make menuconfig ARCH=arm SUBARCH=arm
-if [ -n "$CROSS_COMPILE" ]; then
-    #make clean
-    make -j4 ARCH=arm SUBARCH=arm
-else
-    exit 1
-fi
+make -j4 ARCH=arm SUBARCH=arm
 
-cp -f $KERNEL_ROOT/arch/arm/boot/zImage $MKBOOT/work
+cp -f $KERNEL_ROOT/arch/arm/boot/zImage $WORK
 
-$MKBOOT/dtbTool -s 2048 -o $MKBOOT/work/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROOT/arch/arm/boot/ || exit 1
-$MKBOOT/mkboot $MKBOOT/work $MKBOOT/boot.img
+mkdir -p $RAMDISK/system/lib/modules
+for module in `find $KERNEL_ROOT/drivers -iname *.ko`
+do
+    cp -f $module $RAMDISK/system/lib/modules
+done
+
+$MKBOOT/dtbTool -s 2048 -o $WORK/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROOT/arch/arm/boot/ || exit 1
+$MKBOOT/mkboot $WORK $MKBOOT/boot.img
 
 #adb reboot bootloader
 #fastboot boot $MKBOOT/boot.img
