@@ -122,11 +122,11 @@ on boot
     #venus
     write /sys/bus/msm_subsys/devices/subsys2/restart_level "related"
 
-#    # Subsytem Ramdump collection
-#    mkdir /data/tombstones 0777 system system
-#    mkdir /data/tombstones/ramdump 0777 system system
-#    restorecon_recursive /data/tombstones
-#    write /sys/module/subsystem_restart/parameters/enable_ramdumps 1
+    # Subsytem Ramdump collection
+    mkdir /data/tombstones 0777 system system
+    mkdir /data/tombstones/ramdump 0777 system system
+    restorecon_recursive /data/tombstones
+    write /sys/module/subsystem_restart/parameters/enable_ramdumps 1
 
     # leds
     chown system system /sys/class/leds/red/on_off_ms
@@ -308,8 +308,8 @@ on property:sys.boot_completed=1
     # enable logging of wake up reasons to kernel logs
     write /sys/module/msm_show_resume_irq/parameters/debug_mask 1
 
-#on property:ro.debuggable=1
-#    start ssr_ramdump
+on property:ro.debuggable=1
+    start ssr_ramdump
 
 service rmt_storage /system/bin/rmt_storage
     class core
@@ -468,11 +468,11 @@ service mpdecision /system/bin/mpdecision --no_sleep --avg_comp
    group root system
    disabled
 
-#service ssr_ramdump /system/bin/subsystem_ramdump -m -t emmc
-#    class main
-#    user root
-#    group root
-#    disabled
+service ssr_ramdump /system/bin/subsystem_ramdump -m -t emmc
+    class main
+    user root
+    group root
+    disabled
 
 service thermal-engine /system/bin/thermal-engine-hh
    class main
