@@ -300,6 +300,11 @@ on property:sys.boot_completed=1
     write /sys/module/pm_8x60/modes/cpu1/retention/idle_enabled 1
     write /sys/module/pm_8x60/modes/cpu2/retention/idle_enabled 1
     write /sys/module/pm_8x60/modes/cpu3/retention/idle_enabled 1
+    write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 6
+    write /sys/class/kgsl/kgsl-3d0/max_gpuclk 450000000
+    write /sys/class/kgsl/kgsl-3d0/pwrscale/trustzone/governor simple
+    write /sys/module/msm_kgsl_core/parameters/simple_laziness 5
+    write /sys/module/msm_kgsl_core/parameters/simple_ramp_threshold 6000
     start mpdecision
 
     # enable slimport detection
