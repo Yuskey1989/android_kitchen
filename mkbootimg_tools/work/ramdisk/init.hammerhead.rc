@@ -182,6 +182,7 @@ on post-fs-data
 
     # Set the CPU Freq Sampling rates
     write /sys/module/msm_thermal/core_control/enabled 0
+    write /sys/module/msm_thermal_v2/core_control/enabled 0
     write /sys/devices/system/cpu/cpu1/online 1
     write /sys/devices/system/cpu/cpu2/online 1
     write /sys/devices/system/cpu/cpu3/online 1
@@ -232,6 +233,12 @@ on post-fs-data
     write /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq 2265600
     write /sys/kernel/msm_cpufreq_limit/cpufreq_limit 2265600
     write /sys/module/msm_thermal/core_control/enabled 1
+    write /sys/module/msm_thermal_v2/core_control/enabled 1
+    write /sys/module/msm_thermal_v2/parameters/enabled Y
+    write /sys/module/msm_thermal_v2/parameters/core_control_mask 12
+    write /sys/module/msm_thermal_v2/parameters/core_limit_temp_degC 75
+    write /sys/module/msm_thermal_v2/parameters/freq_control_mask 15
+    write /sys/module/msm_thermal_v2/parameters/limit_temp_degC 80
     chown root.system /sys/devices/system/cpu/mfreq
     chmod 220 /sys/devices/system/cpu/mfreq
     chown root.system /sys/devices/system/cpu/cpu1/online
@@ -262,6 +269,7 @@ on charger
     write /sys/module/pm_8x60/modes/cpu3/power_collapse/suspend_enabled 1
     write /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled 1
     write /sys/module/msm_thermal/core_control/enabled 0
+    write /sys/module/msm_thermal_v2/core_control/enabled 0
     write /sys/devices/system/cpu/cpu1/online 1
     write /sys/devices/system/cpu/cpu2/online 1
     write /sys/devices/system/cpu/cpu3/online 1
@@ -274,6 +282,7 @@ on charger
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 300000
     write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 300000
     write /sys/module/msm_thermal/core_control/enabled 1
+    write /sys/module/msm_thermal_v2/core_control/enabled 1
     write /sys/devices/system/cpu/cpu1/online 0
     write /sys/devices/system/cpu/cpu2/online 0
     write /sys/devices/system/cpu/cpu3/online 0
