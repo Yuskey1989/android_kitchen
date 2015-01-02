@@ -215,7 +215,7 @@ on post-fs-data
     write /sys/devices/system/cpu/cpufreq/intelliactive/io_is_busy "1"
     write /sys/devices/system/cpu/cpufreq/intelliactive/min_sample_time "80000"
     write /sys/devices/system/cpu/cpufreq/intelliactive/sampling_down_factor "40000"
-    write /sys/devices/system/cpu/cpufreq/intelliactive/sync_freq "729600"
+    write /sys/devices/system/cpu/cpufreq/intelliactive/sync_freq "960000"
     write /sys/devices/system/cpu/cpufreq/intelliactive/target_loads "25 300000:50 500000:70 1000000:80 2000000:90"
     write /sys/devices/system/cpu/cpufreq/intelliactive/timer_rate "20000"
     write /sys/devices/system/cpu/cpufreq/intelliactive/timer_slack "60000"
