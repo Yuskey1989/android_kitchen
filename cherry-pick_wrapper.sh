@@ -4,7 +4,7 @@
 RUN_DIR=`pwd`
 android_kitchen_relative_path=`which $0 | xargs dirname 2> /dev/null || echo $0 | xargs dirname 2> /dev/null`
 ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
-KERNEL_ROOT="$ANDROID_KITCHEN/Yuskey1989/Nexus_5"
+KERNEL_ROOT="$ANDROID_KITCHEN/Nexus_5"
 if [ ! -d $KERNEL_ROOT ]; then
     echo "Can not find kernel root path"
     exit 1

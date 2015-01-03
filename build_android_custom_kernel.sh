@@ -2,7 +2,7 @@
 
 android_kitchen_relative_path=`which $0 | xargs dirname 2> /dev/null || echo $0 | xargs dirname 2> /dev/null`
 ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
-KERNEL_ROOT="$ANDROID_KITCHEN/Yuskey1989/Nexus_5"
+KERNEL_ROOT="$ANDROID_KITCHEN/Nexus_5"
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
 TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
