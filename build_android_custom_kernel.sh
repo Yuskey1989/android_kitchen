@@ -30,7 +30,7 @@ echo -n "CROSS_COMPILE="
 echo $CROSS_COMPILE
 [ -n "$CROSS_COMPILE" ] || exit 1
 
-if [ ! -d "$KERNEL_ROOT" -a ! -d "$MKBOOT" -a ! -d "$RAMDISK" -a ! -d "$WORK" ]; then
+if [ ! -d "$KERNEL_ROOT" ] && [ ! -d "$MKBOOT" ] && [ ! -d "$RAMDISK" ] && [ ! -d "$WORK" ]; then
     echo "Do not exist some directories"
     exit 1
 fi
