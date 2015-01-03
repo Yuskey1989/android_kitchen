@@ -5,8 +5,8 @@ ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
 KERNEL_ROOT="$ANDROID_KITCHEN/Yuskey1989/Nexus_5"
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
 TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
-RAMDISK="$ANDROID_KITCHEN/mkbootimg_tools/work/ramdisk"
-WORK="$ANDROID_KITCHEN/mkbootimg_tools/work"
+RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
+WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
 
 for toolchain_path in `echo $TOOLCHAIN_ROOT/*/bin $TOOLCHAIN_ROOT/*/*/*/bin`
 do
