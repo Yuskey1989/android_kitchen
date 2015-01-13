@@ -56,7 +56,7 @@ $MKBOOT/dtbTool -s 2048 -o $WORK/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROO
 $MKBOOT/mkboot $WORK $ANDROID_KITCHEN/boot.img
 
 #adb reboot bootloader
-#fastboot boot $MKBOOT/boot.img
+#fastboot boot $ANDROID_KITCHEN/boot.img
 
 exit 0
 
