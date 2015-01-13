@@ -50,6 +50,10 @@ do
     cp -f $module $RAMDISK/system/lib/modules
 done
 
+if [ -f $ANDROID_KITCHEN/boot.img ]; then
+    mv $ANDROID_KITCHEN/boot.img $ANDROID_KITCHEN/boot.img.old
+fi
+
 kernel_size=`\ls -l $WORK/zImage | cut -d ' ' -f 5`
 sed -i -e "s/kernel_size.*$/kernel_size=$kernel_size/g" $WORK/img_info
 $MKBOOT/dtbTool -s 2048 -o $WORK/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROOT/arch/arm/boot/ || exit 1
