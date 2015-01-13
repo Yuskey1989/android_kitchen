@@ -3,29 +3,52 @@
 android_kitchen_relative_path=`which $0 | xargs dirname 2> /dev/null || echo $0 | xargs dirname 2> /dev/null`
 ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
 KERNEL_ROOT="$ANDROID_KITCHEN/Nexus_5"
+BRANCH=""
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
 TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
 WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
+
+while [ $# -ne 0 ]
+do
+    case $1 in
+	-b)		# Target branch
+	    BRANCH="$2"
+	    shift ;;
+	--help)		# Show help message
+	    echo "$USAGE"
+	    exit $? ;;
+	-*)		# Input invalid option
+	    echo "$0: invalid option: $1" >&2
+	    echo "$USAGE"
+	    exit 1 ;;
+	*)
+	    break ;;
+    esac
+    shift
+done
+if [ $# -ne 0 ]; then
+    case $1 in
+	a15)
+	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
+	linaro)
+	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep gcc-linaro-arm-linux-gnueabihf- | tail -n 1`/bin/arm-linux-gnueabihf-;;
+	sabermod)
+	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep sabermod | tail -n 1`/bin/arm-linux-androideabi-;;
+	google)
+	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep arm-linux-androideabi- | grep -v clang | tail -n 1`/prebuilt/linux-`uname -m`/bin/arm-linux-androideabi-;;
+	*)		# Default toolchain
+	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
+    esac
+else			# Default toolchain
+	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-
+fi
 
 for toolchain_path in `echo $TOOLCHAIN_ROOT/*/bin $TOOLCHAIN_ROOT/*/*/*/bin`
 do
     PATH=$PATH:$toolchain_path
 done
 
-case $1 in
-    a15)
-	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
-    linaro)
-	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep gcc-linaro-arm-linux-gnueabihf- | tail -n 1`/bin/arm-linux-gnueabihf-;;
-    sabermod)
-	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep sabermod | tail -n 1`/bin/arm-linux-androideabi-;;
-    google)
-	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep arm-linux-androideabi- | grep -v clang | tail -n 1`/prebuilt/linux-`uname -m`/bin/arm-linux-androideabi-;;
-    *)
-	# Default toolchain
-	export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
-esac
 echo -n "CROSS_COMPILE="
 echo $CROSS_COMPILE
 [ -n "$CROSS_COMPILE" ] || exit 1
@@ -36,6 +59,9 @@ if [ ! -d "$KERNEL_ROOT" ] && [ ! -d "$MKBOOT" ] && [ ! -d "$RAMDISK" ] && [ ! -
 fi
 
 cd $KERNEL_ROOT
+if [ -n $BRANCH ]; then
+    git checkout $BRANCH
+fi
 if [ ! -f ./.config ]; then
     make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
 fi
