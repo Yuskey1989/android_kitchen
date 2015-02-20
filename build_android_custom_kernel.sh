@@ -87,6 +87,7 @@ $MKBOOT/mkboot $WORK $ANDROID_KITCHEN/boot.img
 
 #adb reboot bootloader
 #fastboot boot $ANDROID_KITCHEN/boot.img
+fastboot flash boot $ANDROID_KITCHEN/boot.img
 
 exit 0
 
