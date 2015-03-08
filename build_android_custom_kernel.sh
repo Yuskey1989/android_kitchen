@@ -33,10 +33,6 @@ if [ $# -ne 0 ]; then
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
 	uber)
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi- | tail -n 1`/bin/arm-linux-androideabi-;;
-	linaro)
-	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep gcc-linaro-arm-linux-gnueabihf- | tail -n 1`/bin/arm-linux-gnueabihf-;;
-	sabermod)
-	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep sabermod | tail -n 1`/bin/arm-linux-androideabi-;;
 	google)
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep arm-linux-androideabi- | grep -v clang | tail -n 1`/prebuilt/linux-`uname -m`/bin/arm-linux-androideabi-;;
 	*)
