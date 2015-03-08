@@ -46,7 +46,7 @@ else			# Default toolchain
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-
 fi
 
-for toolchain_path in `echo $TOOLCHAIN_ROOT/*/bin $TOOLCHAIN_ROOT/*/*/*/bin`
+for toolchain_path in `echo $TOOLCHAIN_ROOT/*/bin $TOOLCHAIN_ROOT/*/*/bin $TOOLCHAIN_ROOT/*/*/*/bin`
 do
     PATH=$PATH:$toolchain_path
 done
