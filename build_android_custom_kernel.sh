@@ -47,6 +47,7 @@ fi
 echo -n "CROSS_COMPILE="
 echo $CROSS_COMPILE
 [ -n "$CROSS_COMPILE" ] || exit 1
+[ -x "${CROSS_COMPILE}gcc" ] || exit 1
 
 if [ ! -d "$KERNEL_ROOT" ] && [ ! -d "$MKBOOT" ] && [ ! -d "$RAMDISK" ] && [ ! -d "$WORK" ]; then
     echo "Do not exist some directories"
@@ -55,9 +56,9 @@ fi
 
 cd $KERNEL_ROOT
 if [ -n $BRANCH ]; then
-    git checkout $BRANCH
+    git checkout $BRANCH || exit 1
 fi
-if [ ! -f ./.config ]; then
+if [ ! -f $KERNEL_ROOT/.config ]; then
     make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
 fi
 make menuconfig ARCH=arm SUBARCH=arm || exit 1
