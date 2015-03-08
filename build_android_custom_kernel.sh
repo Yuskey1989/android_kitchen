@@ -68,7 +68,8 @@ if [ ! -f ./.config ]; then
     make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
 fi
 make menuconfig ARCH=arm SUBARCH=arm || exit 1
-make -j4 ARCH=arm SUBARCH=arm || exit 1
+JOBS=`cat /proc/cpuinfo | grep -c processor`
+make -j${JOBS} ARCH=arm SUBARCH=arm || exit 1
 
 cp -f $KERNEL_ROOT/arch/arm/boot/zImage $WORK
 
