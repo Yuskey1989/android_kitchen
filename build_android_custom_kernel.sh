@@ -77,12 +77,6 @@ make -j${JOBS} ARCH=arm SUBARCH=arm || exit 1
 
 cp -f $KERNEL_ROOT/arch/arm/boot/zImage $WORK
 
-mkdir -p $RAMDISK/system/lib/modules
-for module in `find $KERNEL_ROOT/drivers -iname *.ko`
-do
-    cp -f $module $RAMDISK/system/lib/modules
-done
-
 if [ -f $ANDROID_KITCHEN/boot.img ]; then
     mv $ANDROID_KITCHEN/boot.img $ANDROID_KITCHEN/boot.img.old
 fi
