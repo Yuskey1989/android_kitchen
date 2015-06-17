@@ -57,7 +57,7 @@ if [ $# -ne 0 ]; then
 	    export CROSS_COMPILE=$1;;
     esac
 else			# Default toolchain
-	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-
+	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi- | tail -n 1`/bin/arm-linux-androideabi-
 fi
 
 echo -n "CROSS_COMPILE="
