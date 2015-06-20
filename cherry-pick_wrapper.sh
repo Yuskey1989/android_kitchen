@@ -98,7 +98,9 @@ fi
 
 ### Automatic ###
 cd $KERNEL_ROOT
-git fetch --all
+if [ ! -n "$CHERRY_FILE" ]; then
+    git fetch --all
+fi
 # set base commit from $BASE_AOSP automatically
 BASE_COMMIT=`git log --oneline $BASE_AOSP | head -n 1 | cut -d ' ' -f 2-`
 MAX_IMPORTANCE_THRESHOLD=`echo "$CHERRY_BRANCHES" | wc -w`
