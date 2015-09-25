@@ -33,23 +33,11 @@ if [ $# -ne 0 ]; then
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep cortex_a15 | tail -n 1`/bin/arm-cortex_a15-linux-gnueabihf-;;
 	uber)		# UBERTC arm-eabi
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-eabi- | tail -n 1`/bin/arm-eabi-;;
-	uber-android) # Latest UBERTC androideabi
-	    echo "Update UBERTC/arm-linux-androideabi-x"
-	    cd $TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi- | tail -n 1`
-	    git pull
-	    cd -
+	uber-android) # UBERTC androideabi
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi- | tail -n 1`/bin/arm-linux-androideabi-;;
 	uber-android-4.9) # UBERTC androideabi GCC 4.9 upstream and Linaro patches
-	    echo "Update UBERTC/arm-linux-androideabi-4.9"
-	    cd $TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi-4.9 | tail -n 1`
-	    git pull
-	    cd -
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi-4.9 | tail -n 1`/bin/arm-linux-androideabi-;;
 	uber-android-4.8) # UBERTC androideabi GCC 4.8 upstream and Linaro, AOSP patches
-	    echo "Update UBERTC/arm-linux-androideabi-4.8"
-	    cd $TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi-4.8 | tail -n 1`
-	    git pull
-	    cd -
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/uber_toolchain/`\ls $TOOLCHAIN_ROOT/uber_toolchain | grep arm-linux-androideabi-4.8 | tail -n 1`/bin/arm-linux-androideabi-;;
 	google)		# Google Android-NDK toolchains
 	    export CROSS_COMPILE=$TOOLCHAIN_ROOT/`\ls $TOOLCHAIN_ROOT | grep arm-linux-androideabi- | grep -v clang | tail -n 1`/prebuilt/linux-`uname -m`/bin/arm-linux-androideabi-;;
