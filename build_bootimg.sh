@@ -75,11 +75,11 @@ if [ -f $ANDROID_KITCHEN/boot.img ]; then
     mv $ANDROID_KITCHEN/boot.img $ANDROID_KITCHEN/boot.img.old
 fi
 
+$MKBOOT/dtbTool -s 2048 -o $WORK/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROOT/arch/arm/boot/ || exit 1
 kernel_size=`\ls -l $WORK/zImage | cut -d ' ' -f 5`
 sed -i -e "s/kernel_size.*$/kernel_size=$kernel_size/g" $WORK/img_info
 dtb_size=`\ls -l $WORK/dt.img | cut -d ' ' -f 5`
 sed -i -e "s/dtb_size.*$/dtb_size=$dtb_size/g" $WORK/img_info
-$MKBOOT/dtbTool -s 2048 -o $WORK/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROOT/arch/arm/boot/ || exit 1
 $MKBOOT/mkboot $WORK $ANDROID_KITCHEN/boot.img
 
 #adb reboot bootloader
