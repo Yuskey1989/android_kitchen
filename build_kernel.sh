@@ -7,12 +7,21 @@ BRANCH=""
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
 TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
-WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
+ANYKERNEL="$ANDROID_KITCHEN/AnyKernel2"
+BOOTIMG_WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
+NAME="Kangall"
+VERSION="5"
+DEVICE="hammerhead"
+BUILD=""
 
 while [ $# -ne 0 ]
 do
     case $1 in
-	-b)		# Target branch
+	-b)		# Build bootimg
+	    BUILD="bootimg" ;;
+	-z)		# Build flashable zip
+	    BUILD="zip" ;;
+	--branch)	# Target branch
 	    BRANCH="$2"
 	    shift ;;
 	--help)		# Show help message
@@ -53,8 +62,12 @@ echo $CROSS_COMPILE
 [ -n "$CROSS_COMPILE" ] || exit 1
 [ -x "${CROSS_COMPILE}gcc" ] || exit 1
 
-if [ ! -d "$KERNEL_ROOT" ] && [ ! -d "$MKBOOT" ] && [ ! -d "$RAMDISK" ] && [ ! -d "$WORK" ]; then
-    echo "Do not exist some directories"
+if [ ! -d "$KERNEL_ROOT" ] && [ ! -d "$MKBOOT" ]; then
+    echo "Some directories do not exist."
+    exit 1
+fi
+if [ "$BUILD" != "zip" ] && [ ! -d "$RAMDISK" ] && [ ! -d "$BOOTIMG_WORK" ]; then
+    echo "Some directories do not exist."
     exit 1
 fi
 
@@ -69,19 +82,38 @@ make menuconfig ARCH=arm SUBARCH=arm || exit 1
 JOBS=`cat /proc/cpuinfo | grep -c processor`
 make -j${JOBS} ARCH=arm SUBARCH=arm || exit 1
 
-cp -f $KERNEL_ROOT/arch/arm/boot/zImage $WORK
+if [ "$BUILD" != "zip" ]; then
+    cp -f $KERNEL_ROOT/arch/arm/boot/zImage $BOOTIMG_WORK
+    if [ -f $ANDROID_KITCHEN/boot.img ]; then
+	mv $ANDROID_KITCHEN/boot.img $ANDROID_KITCHEN/boot.img.old
+    fi
 
-if [ -f $ANDROID_KITCHEN/boot.img ]; then
-    mv $ANDROID_KITCHEN/boot.img $ANDROID_KITCHEN/boot.img.old
+    $MKBOOT/dtbTool -s 2048 -o $BOOTIMG_WORK/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROOT/arch/arm/boot/ || exit 1
+    kernel_size=`\ls -l $BOOTIMG_WORK/zImage | cut -d ' ' -f 5`
+    sed -i -e "s/kernel_size.*$/kernel_size=$kernel_size/g" $BOOTIMG_WORK/img_info
+    dtb_size=`\ls -l $BOOTIMG_WORK/dt.img | cut -d ' ' -f 5`
+    sed -i -e "s/dtb_size.*$/dtb_size=$dtb_size/g" $BOOTIMG_WORK/img_info
+    $MKBOOT/mkboot $BOOTIMG_WORK $ANDROID_KITCHEN/boot.img
 fi
 
-$MKBOOT/dtbTool -s 2048 -o $WORK/dt.img -p $KERNEL_ROOT/scripts/dtc/ $KERNEL_ROOT/arch/arm/boot/ || exit 1
-kernel_size=`\ls -l $WORK/zImage | cut -d ' ' -f 5`
-sed -i -e "s/kernel_size.*$/kernel_size=$kernel_size/g" $WORK/img_info
-dtb_size=`\ls -l $WORK/dt.img | cut -d ' ' -f 5`
-sed -i -e "s/dtb_size.*$/dtb_size=$dtb_size/g" $WORK/img_info
-$MKBOOT/mkboot $WORK $ANDROID_KITCHEN/boot.img
+if [ "$BUILD" != "bootimg" ]; then
+    rm -f ${ANYKERNEL}/zImage*
+    rm -f ${ANYKERNEL}/*dtb
 
+    cp -f ${KERNEL_ROOT}/arch/arm/boot/zImage-dtb ${ANYKERNEL}/zImage
+
+    cd ${ANYKERNEL}
+    7za a -tzip -r ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip *
+    mv ${ANYKERNEL}/${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip ${ANDROID_KITCHEN}
+
+    cd ${ANDROID_KITCHEN}
+    java -jar ${ANDROID_KITCHEN}/signapk/aosp-signapk-master/prebuilt/aospsign.jar ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.x509.pem ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.pk8 ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip build.zip
+    ${ANDROID_KITCHEN}/android_packages_apps_OpenDelta/jni/zipadjust build.zip build-fixed.zip
+    java -jar ${ANDROID_KITCHEN}/android_packages_apps_OpenDelta/server/minsignapk.jar ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.x509.pem ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.pk8 build-fixed.zip ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-signed.zip
+
+    rm -f build.zip build-fixed.zip
+    rm -f ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip
+fi
 #adb reboot bootloader
 #fastboot boot $ANDROID_KITCHEN/boot.img
 
