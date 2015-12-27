@@ -12,10 +12,10 @@ fi
 
 ##### SETTINGS #####
 ### Manual ###
-BASE_BRANCH="lp-test"
+BASE_BRANCH="kangall-v5"
 # cherry-pick from here
 # importance order
-CHERRY_BRANCHES="engstk-L/code_blue-l flar2/ElementalX-2.00 franciscofranco/lollipop Cl3Kener/release neobuddy89/lollipop"
+CHERRY_BRANCHES="flar2/ElementalX-6.00 franciscofranco/marshmallow Cl3Kener-M/release"
 # cherry-pick automatically
 # set merge branch name to enable
 #MERGE_INTO="lp-automerge"
@@ -24,13 +24,9 @@ COMMITS_DIR="$KERNEL_ROOT/../commits"
 # cherry-pick if duplicated unmerged commits are more than this number
 # unset to always calculate number of $CHERRY_BRANCHES - 1
 #IMPORTANCE_THRESHOLD="3"
-# reduce execution time of this script, maybe less accuracy (related to $BASE_AOSP)
-# search unmerged commits which is newer than $BASE_COMMIT from $BASE_AOSP
-# set "true" to enable
-FAST="true"
 # set AOSP branch or tag
-BASE_AOSP="android-msm-hammerhead-3.4-lollipop-release"
-BASE_AOSP="android-l-preview_r2.2"
+BASE_AOSP="google-msm/android-msm-hammerhead-3.4-marshmallow"
+BASE_AOSP="android-6.0.0_r0.12"
 # compare base branch with auto cherry-picked branch (search unmerged commits of auto cherry-picked branch)
 # set "true" to enable
 DIFF="true"
@@ -49,7 +45,6 @@ USAGE:  sh $0 [option] {cherry-pick list file}
 		-t [threshold]		Importance threshold (Default: $IMPORTANCE_THRESHOLD)
 		--accuracy		Search all cherry-pick commits (Not use base commit, slow)
 		--disable-auto-merge	Disable auto merging
-		--fast			Speed up searching cherry-pick commits (Use base commit, fast, not accuracy)
 		--help			Show this help message
 	cherry-pick list file:
 		format is \"git log --oneline\"
@@ -69,12 +64,8 @@ do
 	-t)		# Importance threshold
 	    IMPORTANCE_THRESHOLD="$2"
 	    shift ;;
-	--accuracy)
-	    FAST="false" ;;
 	--disable-auto-merge)
 	    MERGE_INTO="" ;;
-	--fast)
-	    FAST="true" ;;
 	--help)		# Show help message
 	    echo "$USAGE"
 	    exit $? ;;
@@ -118,16 +109,12 @@ fi
 if [ $# -eq 0 ]; then ########## When argument is nothing
 echo "Save commits log files to $COMMITS_DIR"
 echo "Good cherry-picking if duplicated unmerged commits are more than $IMPORTANCE_THRESHOLD commits"
-if [ "$FAST" = "true" ]; then
-    echo "Reduce a lot of execution time, maybe less accuracy"
-    echo "Related to AOSP base commit which is newest commit of $BASE_AOSP"
-fi
 
 echo "Making commits log directory"
 mkdir -p $COMMITS_DIR
 echo "Complete"
 echo "Saving commits log of base branch to \"merged\""
-git log --oneline $BASE_BRANCH > $COMMITS_DIR/merged || exit $?
+git log --oneline ${BASE_AOSP}..${BASE_BRANCH} > $COMMITS_DIR/merged || exit $?
 echo "Complete"
 
 ### Generate seed ###
@@ -135,35 +122,42 @@ echo "Generating \"seed\""
 for branch in $CHERRY_BRANCHES
 do
     remote=`dirname $branch`
-    git log --oneline $branch > $COMMITS_DIR/$remote || exit $?
-    cat $COMMITS_DIR/$remote $COMMITS_DIR/merged | sed -e "/^$/d" | cut -d ' ' -f 2- | sort | uniq -u > $COMMITS_DIR/seed_$remote
+    git log --oneline ${BASE_AOSP}..${branch} > $COMMITS_DIR/seed_$remote || exit $?
     echo "seed_$remote is generated"
 done
-cat $COMMITS_DIR/seed_* > $COMMITS_DIR/seed
 echo "Complete"
 
 ### Generate prune ###
-rm -f $COMMITS_DIR/prune_list
+rm -f $COMMITS_DIR/prune_*
 echo "Generating \"prune\""
-while read line
+for branch in $CHERRY_BRANCHES
 do
-    merged=`echo "$line" | cut -d ' ' -f 2-`
-    if [ "$FAST" = "true" ] && [ "$merged" = "$BASE_COMMIT" ]; then
-	echo "Hit base commit"
-	break
-    fi
-    cat $COMMITS_DIR/seed | grep -n -F "$merged" | cut -d ':' -f 1 >> $COMMITS_DIR/prune_list
-done < $COMMITS_DIR/merged
-cat $COMMITS_DIR/prune_list | sort -V | sed -e "s/$/d/g" > $COMMITS_DIR/prune
+    remote=`dirname $branch`
+    while read line
+    do
+	merged=`echo "$line" | cut -d ' ' -f 2-`
+	cat $COMMITS_DIR/seed_$remote | grep -n -F "$merged" | cut -d ':' -f 1 >> $COMMITS_DIR/prune_$remote
+    done < $COMMITS_DIR/merged
+done
+for file in prune_*
+do
+    sed -i -e "s/$/d/g" $COMMITS_DIR/$file
+done
 echo "Complete"
-rm -f $COMMITS_DIR/prune_list
 
 ### Generate cherry ###
 echo "Generating \"cherry\""
-cat $COMMITS_DIR/seed | sed -f $COMMITS_DIR/prune > $COMMITS_DIR/cherry
-rm -f $COMMITS_DIR/prune
+for branch in $CHERRY_BRANCHES
+do
+    remote=`dirname $branch`
+    cat $COMMITS_DIR/seed_$remote | sed -f $COMMITS_DIR/prune_$remote > $COMMITS_DIR/cherry_$remote
+done
+cat $COMMITS_DIR/cherry_* > $COMMITS_DIR/cherry
+cat $COMMITS_DIR/cherry | cut -d ' ' -f 2- > $COMMITS_DIR/cherry_commits
+cat $COMMITS_DIR/cherry_commits | sort | uniq -c | sed -e 's/^[ \t]*//g' | sort > $COMMITS_DIR/cherry_selection
+rm -f $COMMITS_DIR/prune_*
+rm -f $COMMITS_DIR/cherry_commits
 rm -f $COMMITS_DIR/ripe_cherry $COMMITS_DIR/immature_cherry
-cat $COMMITS_DIR/cherry | sort | uniq -c | sed -e 's/^[ \t]*//g' | sort > $COMMITS_DIR/cherry_selection
 while read line
 do
     importance=`echo "$line" | cut -d ' ' -f 1`
@@ -188,7 +182,7 @@ do
 	remote=`dirname $branch`
 # FIX TO HIT REVERT COMMIT TWICE
 # UNIQ AGAIN?
-	cat $COMMITS_DIR/$remote | grep -F "$restore" >> $COMMITS_DIR/passed_cherry && break
+	cat $COMMITS_DIR/cherry_$remote | grep -F "$restore" >> $COMMITS_DIR/passed_cherry && break
     done
 done < $COMMITS_DIR/ripe_cherry
 echo "passed_cherry is generated"
@@ -199,7 +193,7 @@ do
 	remote=`dirname $branch`
 # FIX TO HIT REVERT COMMIT TWICE
 # UNIQ AGAIN?
-	cat $COMMITS_DIR/$remote | grep -F "$restore" >> $COMMITS_DIR/rejected_cherry && break
+	cat $COMMITS_DIR/cherry_$remote | grep -F "$restore" >> $COMMITS_DIR/rejected_cherry && break
     done
 done < $COMMITS_DIR/immature_cherry
 echo "rejected_cherry is generated"
