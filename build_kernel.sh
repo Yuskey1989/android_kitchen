@@ -10,7 +10,7 @@ RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
 ANYKERNEL="$ANDROID_KITCHEN/AnyKernel2"
 BOOTIMG_WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
 NAME="Kangall"
-VERSION="5"
+VERSION="6"
 DEVICE="hammerhead"
 BUILD=""
 
@@ -99,8 +99,10 @@ fi
 if [ "$BUILD" != "bootimg" ]; then
     rm -f ${ANYKERNEL}/zImage*
     rm -f ${ANYKERNEL}/*dtb
+    rm -f ${ANYKERNEL}/modules/*.ko
 
     cp -f ${KERNEL_ROOT}/arch/arm/boot/zImage-dtb ${ANYKERNEL}/zImage
+    find ${KERNEL_ROOT} -name *.ko -print0 | xargs -0 cp -f -t ${ANYKERNEL}/modules
 
     cd ${ANYKERNEL}
     7za a -tzip -r ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip *
