@@ -11,6 +11,45 @@ ANYKERNEL="$ANDROID_KITCHEN/AnyKernel2"
 BOOTIMG_WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
 BUILD="zip"
 
+USAGE="
+Build Android Kernel Script
+
+USAGE:
+    $0 [OPTIONS] [CROSSCOMPILE_PREFIX | SHORTCUT]
+
+OPTIONS:
+    --branch, -b
+	It is able to set kernel target branch.
+	Default is current branch.
+    --image, -i
+	Build the kernel boot image.
+	If you do not set --image or --zip, the kernel is built to the ${BUILD}.
+    --zip, -z
+	Build the Anykernel2 flashable zip file.
+	If you do not set --image or --zip, the kernel is built to the ${BUILD}.
+    --help, -h
+	Show this help message.
+
+CROSSCOMPILE_PREFIX:
+    You can set the prefix of the toolchain.
+    Example:
+	~/user/android_kitchen/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-
+
+    If you do not set the prefix or the shortcut, the kernel is built with the default toolchain.
+
+SHORTCUT:
+    uber
+	Build kernel with latest UBERTC arm-eabi.
+    uber-android
+	Build kernel with latest UBERTC androideabi.
+    uber-android-4.9
+	Build kernel with UBERTC androideabi 4.9.
+    google
+	Build kernel with Google Android-NDK toolchain.
+
+    If you do not set the prefix or the shortcut, the kernel is built with the default toolchain.
+"
+
 while [ $# -ne 0 ]
 do
     case $1 in
