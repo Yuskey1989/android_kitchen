@@ -14,17 +14,17 @@ BUILD=""
 while [ $# -ne 0 ]
 do
     case $1 in
-	-b)		# Build bootimg
+	--image | -i)		# Build bootimg
 	    BUILD="bootimg" ;;
-	-z)		# Build flashable zip
+	--zip | -z)		# Build flashable zip
 	    BUILD="zip" ;;
-	--branch)	# Target branch
+	--branch | -b)		# Target branch
 	    BRANCH="$2"
 	    shift ;;
-	--help)		# Show help message
+	--help | -h)		# Show help message
 	    echo "$USAGE"
 	    exit $? ;;
-	-*)		# Input invalid option
+	-*)			# Input invalid option
 	    echo "$0: invalid option: $1" >&2
 	    echo "$USAGE"
 	    exit 1 ;;
@@ -111,8 +111,5 @@ if [ "$BUILD" != "bootimg" ]; then
     rm -f build.zip build-fixed.zip
     rm -f ${NAME}-${DEVICE}-AnyKernel2-unsigned.zip
 fi
-#adb reboot bootloader
-#fastboot boot $ANDROID_KITCHEN/boot.img
 
 exit 0
-
