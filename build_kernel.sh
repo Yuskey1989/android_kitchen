@@ -9,7 +9,6 @@ TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
 ANYKERNEL="$ANDROID_KITCHEN/AnyKernel2"
 BOOTIMG_WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
-DEVICE="hammerhead"
 BUILD=""
 
 while [ $# -ne 0 ]
@@ -74,6 +73,7 @@ if [ -n $BRANCH ]; then
     git checkout $BRANCH || exit 1
 fi
 NAME=`git branch | grep '*' | cut -d ' ' -f 2`
+DEVICE=`basename $KERNEL_ROOT`
 if [ ! -f $KERNEL_ROOT/.config ]; then
     make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
 fi
