@@ -9,7 +9,7 @@ TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
 ANYKERNEL="$ANDROID_KITCHEN/AnyKernel2"
 BOOTIMG_WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
-BUILD=""
+BUILD="zip"
 
 while [ $# -ne 0 ]
 do
@@ -77,7 +77,7 @@ make menuconfig ARCH=arm SUBARCH=arm || exit 1
 JOBS=`cat /proc/cpuinfo | grep -c processor`
 make -j${JOBS} ARCH=arm SUBARCH=arm || exit 1
 
-if [ "$BUILD" != "zip" ]; then
+if [ "$BUILD" = "bootimg" ]; then
     cp -f $KERNEL_ROOT/arch/arm/boot/zImage $BOOTIMG_WORK
     if [ -f $ANDROID_KITCHEN/boot.img ]; then
 	mv $ANDROID_KITCHEN/boot.img $ANDROID_KITCHEN/boot.img.old
@@ -91,7 +91,7 @@ if [ "$BUILD" != "zip" ]; then
     $MKBOOT/mkboot $BOOTIMG_WORK $ANDROID_KITCHEN/boot.img
 fi
 
-if [ "$BUILD" != "bootimg" ]; then
+if [ "$BUILD" = "zip" ]; then
     rm -f ${ANYKERNEL}/zImage*
     rm -f ${ANYKERNEL}/*dtb
     rm -f ${ANYKERNEL}/modules/*.ko
