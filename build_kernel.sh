@@ -3,7 +3,6 @@
 android_kitchen_relative_path=`which $0 | xargs dirname 2> /dev/null || echo $0 | xargs dirname 2> /dev/null`
 ANDROID_KITCHEN=`cd $android_kitchen_relative_path && pwd`
 KERNEL_ROOT="$ANDROID_KITCHEN/Nexus_5"
-BRANCH=""
 MKBOOT="$ANDROID_KITCHEN/mkbootimg_tools"
 TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
@@ -105,7 +104,7 @@ fi
 echo "Build the $BUILD"
 
 cd $KERNEL_ROOT
-if [ -n $BRANCH ]; then
+if [ -n "$BRANCH" ]; then
     git checkout $BRANCH || exit 1
 fi
 NAME=`git branch | grep '*' | cut -d ' ' -f 2`
