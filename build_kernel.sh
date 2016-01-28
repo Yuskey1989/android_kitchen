@@ -102,6 +102,7 @@ if [ "$BUILD" != "zip" ] && [ ! -d "$RAMDISK" ] && [ ! -d "$BOOTIMG_WORK" ]; the
     echo "Some directories do not exist."
     exit 1
 fi
+echo "Build the $BUILD"
 
 cd $KERNEL_ROOT
 if [ -n $BRANCH ]; then
