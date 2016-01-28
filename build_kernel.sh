@@ -9,8 +9,6 @@ TOOLCHAIN_ROOT="$ANDROID_KITCHEN/toolchains"
 RAMDISK="$ANDROID_KITCHEN/hammerhead-ramdisk/ramdisk"
 ANYKERNEL="$ANDROID_KITCHEN/AnyKernel2"
 BOOTIMG_WORK="$ANDROID_KITCHEN/hammerhead-ramdisk"
-NAME="Kangall"
-VERSION="6"
 DEVICE="hammerhead"
 BUILD=""
 
@@ -75,6 +73,7 @@ cd $KERNEL_ROOT
 if [ -n $BRANCH ]; then
     git checkout $BRANCH || exit 1
 fi
+NAME=`git branch | grep '*' | cut -d ' ' -f 2`
 if [ ! -f $KERNEL_ROOT/.config ]; then
     make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
 fi
@@ -105,16 +104,16 @@ if [ "$BUILD" != "bootimg" ]; then
     find ${KERNEL_ROOT} -name *.ko -print0 | xargs -0 cp -f -t ${ANYKERNEL}/modules
 
     cd ${ANYKERNEL}
-    7za a -tzip -r ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip *
-    mv ${ANYKERNEL}/${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip ${ANDROID_KITCHEN}
+    7za a -tzip -r ${NAME}-${DEVICE}-AnyKernel2-unsigned.zip *
+    mv ${ANYKERNEL}/${NAME}-${DEVICE}-AnyKernel2-unsigned.zip ${ANDROID_KITCHEN}
 
     cd ${ANDROID_KITCHEN}
-    java -jar ${ANDROID_KITCHEN}/signapk/aosp-signapk-master/prebuilt/aospsign.jar ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.x509.pem ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.pk8 ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip build.zip
+    java -jar ${ANDROID_KITCHEN}/signapk/aosp-signapk-master/prebuilt/aospsign.jar ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.x509.pem ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.pk8 ${NAME}-${DEVICE}-AnyKernel2-unsigned.zip build.zip
     ${ANDROID_KITCHEN}/android_packages_apps_OpenDelta/jni/zipadjust build.zip build-fixed.zip
-    java -jar ${ANDROID_KITCHEN}/android_packages_apps_OpenDelta/server/minsignapk.jar ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.x509.pem ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.pk8 build-fixed.zip ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-signed.zip
+    java -jar ${ANDROID_KITCHEN}/android_packages_apps_OpenDelta/server/minsignapk.jar ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.x509.pem ${ANDROID_KITCHEN}/signapk/build/target/product/security/testkey.pk8 build-fixed.zip ${NAME}-${DEVICE}-AnyKernel2-signed.zip
 
     rm -f build.zip build-fixed.zip
-    rm -f ${NAME}-v${VERSION}-${DEVICE}-AnyKernel2-unsigned.zip
+    rm -f ${NAME}-${DEVICE}-AnyKernel2-unsigned.zip
 fi
 #adb reboot bootloader
 #fastboot boot $ANDROID_KITCHEN/boot.img
