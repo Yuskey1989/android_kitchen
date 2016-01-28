@@ -107,7 +107,7 @@ cd $KERNEL_ROOT
 if [ -n "$BRANCH" ]; then
     git checkout $BRANCH || exit 1
 fi
-NAME=`git branch | grep '*' | cut -d ' ' -f 2`
+NAME=`git branch | grep -e '^*' | cut -d ' ' -f 2`
 DEVICE=`basename $KERNEL_ROOT`
 if [ ! -f $KERNEL_ROOT/.config ]; then
     make ARCH=arm SUBARCH=arm yuskey_hammerhead_defconfig
